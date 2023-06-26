@@ -2,6 +2,15 @@ const options = {
   blockSize: 30,
   widthInBlocks: 10,
   heightInBlocks: 24,
+  colors: [
+    "#95BDFF", // turquoise
+    "#FFD966", // yellow
+    "#BA90C6", // purple
+    "#7286D3", // blue
+    "#FAAB78", // orange
+    "#A2CDB0", // green
+    "#FD8A8A", // red
+  ],
 };
 
 const RUNNING = 0;
@@ -20,9 +29,10 @@ canvas.height = Math.floor(height * scale);
 
 const context = canvas.getContext("2d");
 context.scale(scale, scale);
+context.strokeStyle = '#'
 
-// Contains all 19 fixed tetriminos. The first element in all lists is the
-// pivot element that the other g_blocks rotate around.
+// Contains all 19 fixed tetrominos. The first element in the innermost lists is the pivot block
+// that the other blocks rotates around.
 const tetrominos = [
   [[[0,0],[-1,0],[1,0],[2,0]], [[0,0],[0,-1],[0,1],[0,2]]],           // I
   [[[0,0],[1,0],[0,-1],[1,-1]]],                                      // O
@@ -142,7 +152,7 @@ function land() {
   for (let i = 0; i < blocks.length; i++) {
     const blockX = x + blocks[i][0];
     const blockY = y + blocks[i][1];
-    state.playfield[blockY][blockX] = 1;
+    state.playfield[blockY][blockX] = tetromino;
   }
 }
 
@@ -170,11 +180,12 @@ function draw() {
   context.stroke();
 
   // Draw landed.
-  context.beginPath();
   for (let y = 0; y < options.heightInBlocks; y++) {
     for (let x = 0; x < options.widthInBlocks; x++) {
-      if (state.playfield[y][x] > -1) {
-        context.rect(
+      const colorIndex = state.playfield[y][x];
+      if (colorIndex > -1) {
+        context.fillStyle = options.colors[colorIndex];
+        context.fillRect(
           x * options.blockSize,
           y * options.blockSize,
           options.blockSize,
@@ -183,11 +194,11 @@ function draw() {
       }
     }
   }
-  context.fill();
 
   // Draw current.
   const { x, y, tetromino, rotation } = state.currentTetromino;
   const blocks = tetrominos[tetromino][rotation];
+  context.fillStyle = options.colors[tetromino];
   for (let i = 0; i < blocks.length; i++) {
     context.fillRect(
       (blocks[i][0] + x) * options.blockSize,
