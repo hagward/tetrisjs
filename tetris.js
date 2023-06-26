@@ -116,43 +116,20 @@ function update(timestamp) {
 
 function tryMoveLeftOrRight(dx) {
   const { x, y, tetromino, rotation } = state.currentTetromino;
+  const newX = x + dx;
   const blocks = tetrominos[tetromino][rotation];
-  for (let i = 0; i < blocks.length; i++) {
-    const blockX = x + dx + blocks[i][0];
-    if (blockX < 0 || blockX >= options.widthInBlocks) {
-      return;
-    }
-    const blockY = y + blocks[i][1];
-    if (blockY >= 0) {
-      if (blockX >= 0 && state.playfield[blockY][blockX] > -1) {
-        return;
-      }
-      if (blockX <= options.widthInBlocks - 1 && state.playfield[blockY][blockX] > -1) {
-        return;
-      }
-    }
+  if (!isValidPosition(blocks, newX, y)) {
+    return;
   }
-  state.currentTetromino.x = x + dx;
+  state.currentTetromino.x = newX;
 }
 
 function tryRotate(dr) {
   const { x, y, tetromino, rotation } = state.currentTetromino;
   const newRotation = (rotation + dr) % tetrominos[tetromino].length;
   const blocks = tetrominos[tetromino][newRotation];
-  for (let i = 0; i < blocks.length; i++) {
-    const blockX = x + blocks[i][0];
-    if (blockX < 0 || blockX >= options.widthInBlocks) {
-      return;
-    }
-    const blockY = y + blocks[i][1];
-    if (blockY >= 0) {
-      if (blockX >= 0 && state.playfield[blockY][blockX] > -1) {
-        return;
-      }
-      if (blockX <= options.widthInBlocks - 1 && state.playfield[blockY][blockX] > -1) {
-        return;
-      }
-    }
+  if (!isValidPosition(blocks, x, y)) {
+    return;
   }
   state.currentTetromino.rotation = newRotation;
   state.keydown.ArrowUp = false;
@@ -164,7 +141,6 @@ function tryLand() {
   for (let i = 0; i < blocks.length; i++) {
     const blockX = x + blocks[i][0];
     const blockY = y + blocks[i][1];
-    console.log(`blockX: ${blockX}, blockY: ${blockY}`);
     if (blockY >= options.heightInBlocks - 1 || state.playfield[blockY + 1][blockX] > -1) {
       land();
       spawnNew();
@@ -182,6 +158,25 @@ function land() {
     const blockY = y + blocks[i][1];
     state.playfield[blockY][blockX] = tetromino;
   }
+}
+
+function isValidPosition(tetromino, x, y) {
+  for (let i = 0; i < tetromino.length; i++) {
+    const blockX = x + tetromino[i][0];
+    if (blockX < 0 || blockX >= options.widthInBlocks) {
+      return false;
+    }
+    const blockY = y + tetromino[i][1];
+    if (blockY >= 0) {
+      if (blockX >= 0 && state.playfield[blockY][blockX] > -1) {
+        return false;
+      }
+      if (blockX <= options.widthInBlocks - 1 && state.playfield[blockY][blockX] > -1) {
+        return false;
+      }
+    }
+  }
+  return true;
 }
 
 function spawnNew() {
