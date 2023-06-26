@@ -3,14 +3,15 @@ const options = {
   widthInBlocks: 10,
   heightInBlocks: 24,
   colors: [
-    "#95BDFF", // turquoise
-    "#FFD966", // yellow
-    "#BA90C6", // purple
-    "#7286D3", // blue
-    "#FAAB78", // orange
-    "#A2CDB0", // green
-    "#FD8A8A", // red
+    "#1C82AD", // cyan
+    "#FFD700", // yellow
+    "#810CA8", // purple
+    "#00337C", // blue
+    "#FA7D09", // orange
+    "#4E9F3D", // green
+    "#CD1818", // red
   ],
+  gridColor: "#222",
 };
 
 const RUNNING = 0;
@@ -29,7 +30,7 @@ canvas.height = Math.floor(height * scale);
 
 const context = canvas.getContext("2d");
 context.scale(scale, scale);
-context.strokeStyle = "#9BABB8";
+context.strokeStyle = options.gridColor;
 
 // Contains all 19 fixed tetrominos. The first element in the innermost lists is the pivot block
 // that the other blocks rotates around.
