@@ -147,6 +147,7 @@ function tryLand() {
     const blockY = y + blocks[i][1];
     if (blockY >= options.heightInBlocks - 1 || state.playfield[blockY + 1][blockX] > -1) {
       land();
+      clearLines();
       if (!trySpawnNew()) {
         state.state = GAME_OVER;
         return false;
@@ -164,6 +165,22 @@ function land() {
     const blockX = x + blocks[i][0];
     const blockY = y + blocks[i][1];
     state.playfield[blockY][blockX] = tetromino;
+  }
+}
+
+function clearLines() {
+  for (let y = options.heightInBlocks - 1; y >= 0; y--) {
+    let fullRow = true;
+    for (let x = 0; x < options.widthInBlocks; x++) {
+      if (state.playfield[y][x] === -1) {
+        fullRow = false;
+        break;
+      }
+    }
+    if (fullRow) {
+      state.playfield.splice(y, 1);
+      state.playfield.unshift(Array.from(Array(options.widthInBlocks), () => -1));
+    }
   }
 }
 
