@@ -59,6 +59,7 @@ const state = {
   timestamp: {
     game: undefined,
     advance: undefined,
+    move: undefined,
   },
   keydown: {
     ArrowLeft: false,
@@ -101,10 +102,13 @@ function update(timestamp) {
     state.timestamp.advance = timestamp;
   }
 
-  if (state.keydown.ArrowLeft) {
-    tryMoveLeftOrRight(-1);
-  } else if (state.keydown.ArrowRight) {
-    tryMoveLeftOrRight(1);
+  if (state.keydown.ArrowLeft || state.keydown.ArrowRight) {
+    if (state.timestamp.move === undefined) {
+      tryMoveLeftOrRight(state.keydown.ArrowLeft ? -1 : 1);
+      state.timestamp.move = timestamp;
+    } else if (timestamp - state.timestamp.move >= 200) {
+      tryMoveLeftOrRight(state.keydown.ArrowLeft ? -1 : 1);
+    }
   }
 
   if (state.keydown.ArrowUp) {
@@ -296,6 +300,7 @@ document.addEventListener("keyup", ({ key }) => {
     case "ArrowDown":
     case "ArrowUp":
       state.keydown[key] = false;
+      state.timestamp.move = undefined;
       break;
   }
 });
