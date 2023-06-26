@@ -64,6 +64,7 @@ const state = {
     ArrowLeft: false,
     ArrowRight: false,
     ArrowDown: false,
+    ArrowUp: false,
   },
   currentTetromino: {
     x: 0,
@@ -102,6 +103,10 @@ function update(timestamp) {
     tryMoveLeftOrRight(1);
   }
 
+  if (state.keydown.ArrowUp) {
+    tryRotate(1);
+  }
+
   if (state.keydown.ArrowDown) {
     if (!tryLand()) {
       state.currentTetromino.y++;
@@ -128,6 +133,29 @@ function tryMoveLeftOrRight(dx) {
     }
   }
   state.currentTetromino.x = x + dx;
+}
+
+function tryRotate(dr) {
+  const { x, y, tetromino, rotation } = state.currentTetromino;
+  const newRotation = (rotation + dr) % tetrominos[tetromino].length;
+  const blocks = tetrominos[tetromino][newRotation];
+  for (let i = 0; i < blocks.length; i++) {
+    const blockX = x + blocks[i][0];
+    if (blockX < 0 || blockX >= options.widthInBlocks) {
+      return;
+    }
+    const blockY = y + blocks[i][1];
+    if (blockY >= 0) {
+      if (blockX >= 0 && state.playfield[blockY][blockX] > -1) {
+        return;
+      }
+      if (blockX <= options.widthInBlocks - 1 && state.playfield[blockY][blockX] > -1) {
+        return;
+      }
+    }
+  }
+  state.currentTetromino.rotation = newRotation;
+  state.keydown.ArrowUp = false;
 }
 
 function tryLand() {
@@ -210,10 +238,15 @@ function draw() {
 }
 
 document.addEventListener("keydown", (event) => {
+  if (event.repeat) {
+    return;
+  }
+
   switch (event.key) {
     case "ArrowLeft":
     case "ArrowRight":
     case "ArrowDown":
+    case "ArrowUp":
       event.preventDefault();
       state.keydown[event.key] = true;
       break;
@@ -225,6 +258,7 @@ document.addEventListener("keyup", ({ key }) => {
     case "ArrowLeft":
     case "ArrowRight":
     case "ArrowDown":
+    case "ArrowUp":
       state.keydown[key] = false;
       break;
   }
