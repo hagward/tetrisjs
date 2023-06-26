@@ -29,7 +29,7 @@ canvas.height = Math.floor(height * scale);
 
 const context = canvas.getContext("2d");
 context.scale(scale, scale);
-context.strokeStyle = '#'
+context.strokeStyle = "#9BABB8";
 
 // Contains all 19 fixed tetrominos. The first element in the innermost lists is the pivot block
 // that the other blocks rotates around.
@@ -190,18 +190,6 @@ function spawnNew() {
 function draw() {
   context.clearRect(0, 0, width, height);
 
-  // Draw grid.
-  context.beginPath();
-  for (let y = 0; y < options.heightInBlocks; y++) {
-    context.moveTo(0, y * options.blockSize);
-    context.lineTo(width, y * options.blockSize);
-  }
-  for (let x = 0; x < options.widthInBlocks; x++) {
-    context.moveTo(x * options.blockSize, 0);
-    context.lineTo(x * options.blockSize, height);
-  }
-  context.stroke();
-
   // Draw landed.
   for (let y = 0; y < options.heightInBlocks; y++) {
     for (let x = 0; x < options.widthInBlocks; x++) {
@@ -230,6 +218,18 @@ function draw() {
       options.blockSize
     );
   }
+
+  // Draw grid.
+  context.beginPath();
+  for (let y = 0; y < options.heightInBlocks; y++) {
+    context.moveTo(0, y * options.blockSize);
+    context.lineTo(width, y * options.blockSize);
+  }
+  for (let x = 0; x < options.widthInBlocks; x++) {
+    context.moveTo(x * options.blockSize, 0);
+    context.lineTo(x * options.blockSize, height);
+  }
+  context.stroke();
 }
 
 document.addEventListener("keydown", (event) => {
