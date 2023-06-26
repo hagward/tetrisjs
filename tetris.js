@@ -92,15 +92,24 @@ function update(timestamp) {
 }
 
 function tryMoveLeftOrRight(dx) {
-  const { x, tetromino, rotation } = state.currentTetromino;
-  const newX = x + dx;
+  const { x, y, tetromino, rotation } = state.currentTetromino;
   const blocks = tetrominos[tetromino][rotation];
   for (let i = 0; i < blocks.length; i++) {
-    if (newX + blocks[i][0] < 0 || newX + blocks[i][0] >= options.widthInBlocks) {
+    const blockX = x + dx + blocks[i][0];
+    if (blockX < 0 || blockX >= options.widthInBlocks) {
       return;
     }
+    const blockY = y + blocks[i][1];
+    if (blockY >= 0) {
+      if (blockX >= 0 && state.playfield[blockY][blockX] > -1) {
+        return;
+      }
+      if (blockX <= options.widthInBlocks - 1 && state.playfield[blockY][blockX] > -1) {
+        return;
+      }
+    }
   }
-  state.currentTetromino.x = newX;
+  state.currentTetromino.x = x + dx;
 }
 
 function tryLand() {
