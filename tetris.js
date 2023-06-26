@@ -67,6 +67,7 @@ const state = {
     ArrowRight: false,
     ArrowDown: false,
     ArrowUp: false,
+    " ": false,
   },
   currentTetromino: {
     x: 0,
@@ -103,6 +104,12 @@ function update(timestamp) {
     state.timestamp.advance = timestamp;
   }
 
+  if (state.keydown[" "] && state.timestamp.move === undefined) {
+    instaLand();
+    state.timestamp.move = timestamp;
+    return;
+  }
+
   if (state.keydown.ArrowLeft || state.keydown.ArrowRight) {
     if (state.timestamp.move === undefined) {
       tryMoveLeftOrRight(state.keydown.ArrowLeft ? -1 : 1);
@@ -112,11 +119,9 @@ function update(timestamp) {
     }
   }
 
-  if (state.keydown.ArrowUp) {
-    if (state.timestamp.move === undefined) {
-      tryRotate(1);
-      state.timestamp.move = timestamp;
-    }
+  if (state.keydown.ArrowUp && state.timestamp.move === undefined) {
+    tryRotate(1);
+    state.timestamp.move = timestamp;
   }
 
   if (state.keydown.ArrowDown) {
@@ -180,6 +185,12 @@ function land() {
     const blockX = x + blocks[i][0];
     const blockY = y + blocks[i][1];
     state.playfield[blockY][blockX] = tetromino;
+  }
+}
+
+function instaLand() {
+  while (state.state === RUNNING && !tryLand()) {
+    state.currentTetromino.y++;
   }
 }
 
@@ -294,6 +305,7 @@ document.addEventListener("keydown", (event) => {
     case "ArrowRight":
     case "ArrowDown":
     case "ArrowUp":
+    case " ":
       event.preventDefault();
       state.keydown[event.key] = true;
       break;
@@ -306,6 +318,7 @@ document.addEventListener("keyup", ({ key }) => {
     case "ArrowRight":
     case "ArrowDown":
     case "ArrowUp":
+    case " ":
       state.keydown[key] = false;
       state.timestamp.move = undefined;
       break;
