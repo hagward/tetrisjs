@@ -148,17 +148,17 @@ function spawnNew() {
 function draw() {
   context.clearRect(0, 0, width, height);
 
-  // Draw current.
-  const { x, y, tetromino, rotation } = state.currentTetromino;
-  const blocks = tetrominos[tetromino][rotation];
-  for (let i = 0; i < blocks.length; i++) {
-    context.fillRect(
-      (blocks[i][0] + x) * options.blockSize,
-      (blocks[i][1] + y) * options.blockSize,
-      options.blockSize,
-      options.blockSize
-    );
+  // Draw grid.
+  context.beginPath();
+  for (let y = 0; y < options.heightInBlocks; y++) {
+    context.moveTo(0, y * options.blockSize);
+    context.lineTo(width, y * options.blockSize);
   }
+  for (let x = 0; x < options.widthInBlocks; x++) {
+    context.moveTo(x * options.blockSize, 0);
+    context.lineTo(x * options.blockSize, height);
+  }
+  context.stroke();
 
   // Draw landed.
   context.beginPath();
@@ -175,6 +175,18 @@ function draw() {
     }
   }
   context.fill();
+
+  // Draw current.
+  const { x, y, tetromino, rotation } = state.currentTetromino;
+  const blocks = tetrominos[tetromino][rotation];
+  for (let i = 0; i < blocks.length; i++) {
+    context.fillRect(
+      (blocks[i][0] + x) * options.blockSize,
+      (blocks[i][1] + y) * options.blockSize,
+      options.blockSize,
+      options.blockSize
+    );
+  }
 }
 
 document.addEventListener("keydown", (event) => {
