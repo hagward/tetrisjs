@@ -112,7 +112,7 @@ function update(timestamp) {
   }
 
   if (state.keydown.ArrowDown) {
-    if (!tryLand()) {
+    if (!canLand()) {
       state.currentTetromino.y++;
     }
   }
@@ -140,18 +140,26 @@ function tryRotate(dr) {
 }
 
 function tryLand() {
+  if (!canLand()) {
+    return false;
+  }
+
+  land();
+  clearLines();
+  if (!trySpawnNew()) {
+    state.state = GAME_OVER;
+    return false;
+  }
+  return true;
+}
+
+function canLand() {
   const { x, y, tetromino, rotation } = state.currentTetromino;
   const blocks = tetrominos[tetromino][rotation];
   for (let i = 0; i < blocks.length; i++) {
     const blockX = x + blocks[i][0];
     const blockY = y + blocks[i][1];
     if (blockY >= options.heightInBlocks - 1 || state.playfield[blockY + 1][blockX] > -1) {
-      land();
-      clearLines();
-      if (!trySpawnNew()) {
-        state.state = GAME_OVER;
-        return false;
-      }
       return true;
     }
   }
