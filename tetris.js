@@ -36,6 +36,14 @@ const tetrominos = [
   [[[0,0],[-1,0],[0,1],[1,1]], [[0,0],[0,1],[1,0],[1,-1]]]            // Z
 ];
 
+const TETROMINO_I = 0;
+const TETROMINO_O = 1;
+const TETROMINO_T = 2;
+const TETROMINO_J = 3;
+const TETROMINO_L = 4;
+const TETROMINO_S = 5;
+const TETROMINO_Z = 6;
+
 const state = {
   state: RUNNING,
   timestamp: {
@@ -139,10 +147,11 @@ function land() {
 }
 
 function spawnNew() {
-  state.currentTetromino.x = 0;
-  state.currentTetromino.y = 0;
+  const tetromino = Math.floor(Math.random() * tetrominos.length);
+  state.currentTetromino.tetromino = tetromino;
+  state.currentTetromino.x = 4;
+  state.currentTetromino.y = ([TETROMINO_I, TETROMINO_S, TETROMINO_Z].includes(tetromino)) ? 0 : 1;
   state.currentTetromino.rotation = 0;
-  state.currentTetromino.tetromino = (state.currentTetromino.tetromino + 1) % tetrominos.length;
 }
 
 function draw() {
@@ -210,4 +219,5 @@ document.addEventListener("keyup", ({ key }) => {
   }
 });
 
+spawnNew();
 window.requestAnimationFrame(run);
