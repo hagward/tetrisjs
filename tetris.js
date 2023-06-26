@@ -182,6 +182,7 @@ function land() {
 }
 
 function clearLines() {
+  let clearedLines = 0;
   for (let y = options.heightInBlocks - 1; y >= 0; y--) {
     let fullRow = true;
     for (let x = 0; x < options.widthInBlocks; x++) {
@@ -192,8 +193,11 @@ function clearLines() {
     }
     if (fullRow) {
       state.playfield.splice(y, 1);
-      state.playfield.unshift(Array.from(Array(options.widthInBlocks), () => -1));
+      clearedLines++;
     }
+  }
+  for (let i = 0; i < clearedLines; i++) {
+    state.playfield.unshift(Array.from(Array(options.widthInBlocks), () => -1));
   }
 }
 
