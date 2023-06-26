@@ -78,6 +78,10 @@ const state = {
 };
 
 function run(timestamp) {
+  if (state.state !== RUNNING) {
+    return;
+  }
+
   if (state.timestamp.game === undefined || timestamp - state.timestamp.game >= 16) {
     update(timestamp);
     draw();
@@ -143,7 +147,10 @@ function tryLand() {
     const blockY = y + blocks[i][1];
     if (blockY >= options.heightInBlocks - 1 || state.playfield[blockY + 1][blockX] > -1) {
       land();
-      spawnNew();
+      if (!trySpawnNew()) {
+        state.state = GAME_OVER;
+        return false;
+      }
       return true;
     }
   }
@@ -179,12 +186,21 @@ function isValidPosition(tetromino, x, y) {
   return true;
 }
 
-function spawnNew() {
+function trySpawnNew() {
   const tetromino = Math.floor(Math.random() * tetrominos.length);
+  const x = 4;
+  const y = ([TETROMINO_I, TETROMINO_S, TETROMINO_Z].includes(tetromino)) ? 0 : 1;
+  const rotation = 0;
+  const blocks = tetrominos[tetromino][rotation];
+  if (!isValidPosition(blocks, x, y)) {
+    return false;
+  }
+
   state.currentTetromino.tetromino = tetromino;
-  state.currentTetromino.x = 4;
-  state.currentTetromino.y = ([TETROMINO_I, TETROMINO_S, TETROMINO_Z].includes(tetromino)) ? 0 : 1;
-  state.currentTetromino.rotation = 0;
+  state.currentTetromino.x = x;
+  state.currentTetromino.y = y;
+  state.currentTetromino.rotation = rotation;
+  return true;
 }
 
 function draw() {
@@ -259,5 +275,5 @@ document.addEventListener("keyup", ({ key }) => {
   }
 });
 
-spawnNew();
+trySpawnNew();
 window.requestAnimationFrame(run);
