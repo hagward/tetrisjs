@@ -113,7 +113,10 @@ function update(timestamp) {
   }
 
   if (state.keydown.ArrowUp) {
-    tryRotate(1);
+    if (state.timestamp.move === undefined) {
+      tryRotate(1);
+      state.timestamp.move = timestamp;
+    }
   }
 
   if (state.keydown.ArrowDown) {
@@ -141,7 +144,6 @@ function tryRotate(dr) {
     return;
   }
   state.currentTetromino.rotation = newRotation;
-  state.keydown.ArrowUp = false;
 }
 
 function tryLand() {
